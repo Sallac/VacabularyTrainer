@@ -18,10 +18,16 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- Direction Dropdown -->
+            <!-- Selection Dropdowns -->
             <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Buch: " VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                <ComboBox x:Name="BookComboBox" Width="120" Margin="0,0,20,0" SelectionChanged="BookComboBox_SelectionChanged" />
+
+                <TextBlock Text="Unit: " VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                <ComboBox x:Name="UnitComboBox" Width="120" Margin="0,0,20,0" SelectionChanged="UnitComboBox_SelectionChanged" />
+
                 <TextBlock Text="Richtung: " VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                <ComboBox x:Name="DirectionComboBox" Width="150" SelectionChanged="DirectionComboBox_SelectionChanged">
+                <ComboBox x:Name="DirectionComboBox" Width="120" SelectionChanged="DirectionComboBox_SelectionChanged">
                     <ComboBoxItem Content="EN -> DE" IsSelected="True" />
                     <ComboBoxItem Content="DE -> EN" />
                 </ComboBox>
