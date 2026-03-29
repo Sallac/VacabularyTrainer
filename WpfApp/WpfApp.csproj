@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="vocab.csv">
+    <None Update="BlueLine\**\*.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

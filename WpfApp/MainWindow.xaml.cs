@@ -36,23 +36,99 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
-            LoadVocabulary();
+            InitializeBookAndUnitSelection();
             _isInitialized = true;
+            LoadVocabularyForCurrentSelection();
             StartNewSession();
         }
 
-        private void LoadVocabulary()
+        private void InitializeBookAndUnitSelection()
         {
             try
             {
-                var lines = File.ReadAllLines("vocab.csv");
-                // Skip header line
-                foreach (var line in lines.Skip(1))
+                string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BlueLine");
+                if (Directory.Exists(basePath))
                 {
-                    var parts = line.Split(';');
-                    if (parts.Length == 2)
+                    var books = Directory.GetDirectories(basePath)
+                                         .Select(d => new DirectoryInfo(d).Name)
+                                         .OrderBy(n => n)
+                                         .ToList();
+
+                    foreach (var book in books)
                     {
-                        _allVocabulary.Add(new Vocabulary { English = parts[0], German = parts[1] });
+                        BookComboBox.Items.Add(book);
+                    }
+
+                    if (books.Count > 0)
+                    {
+                        BookComboBox.SelectedIndex = 0;
+                        LoadUnitsForSelectedBook();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Laden der Ordnerstruktur: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadUnitsForSelectedBook()
+        {
+            UnitComboBox.Items.Clear();
+            if (BookComboBox.SelectedItem == null) return;
+
+            try
+            {
+                string bookName = BookComboBox.SelectedItem.ToString() ?? "";
+                string bookPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BlueLine", bookName);
+
+                if (Directory.Exists(bookPath))
+                {
+                    var units = Directory.GetFiles(bookPath, "*.csv")
+                                         .Select(f => Path.GetFileNameWithoutExtension(f))
+                                         .OrderBy(n => n)
+                                         .ToList();
+
+                    foreach (var unit in units)
+                    {
+                        UnitComboBox.Items.Add(unit);
+                    }
+
+                    if (units.Count > 0)
+                    {
+                        UnitComboBox.SelectedIndex = 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Laden der Units: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadVocabularyForCurrentSelection()
+        {
+            if (BookComboBox.SelectedItem == null || UnitComboBox.SelectedItem == null) return;
+
+            string bookName = BookComboBox.SelectedItem.ToString() ?? "";
+            string unitName = UnitComboBox.SelectedItem.ToString() ?? "";
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BlueLine", bookName, $"{unitName}.csv");
+
+            _allVocabulary.Clear();
+
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    var lines = File.ReadAllLines(filePath);
+                    // Skip header line
+                    foreach (var line in lines.Skip(1))
+                    {
+                        var parts = line.Split(';');
+                        if (parts.Length >= 2)
+                        {
+                            _allVocabulary.Add(new Vocabulary { English = parts[0].Trim(), German = parts[1].Trim() });
+                        }
                     }
                 }
             }
@@ -202,6 +278,20 @@ namespace WpfApp
                 DirectionComboBox.SelectedIndex = _isEnglishToGerman ? 0 : 1;
                 DirectionComboBox.SelectionChanged += DirectionComboBox_SelectionChanged;
             }
+        }
+
+        private void BookComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isInitialized) return;
+            LoadUnitsForSelectedBook();
+            // Loading units will trigger UnitComboBox_SelectionChanged which handles vocabulary loading and session restart
+        }
+
+        private void UnitComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isInitialized || UnitComboBox.SelectedItem == null) return;
+            LoadVocabularyForCurrentSelection();
+            StartNewSession();
         }
     }
 }
