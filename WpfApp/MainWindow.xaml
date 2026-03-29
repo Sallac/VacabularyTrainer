@@ -1,8 +1,80 @@
 <Window x:Class="WpfApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Empty Window" Height="450" Width="800">
-    <!-- This is the main grid, currently empty as requested -->
-    <Grid>
+        Title="Vokabeltrainer" Height="600" Width="800"
+        Background="#F5F5F5">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Bar: Settings and Statistics -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Direction Dropdown -->
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Richtung: " VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                <ComboBox x:Name="DirectionComboBox" Width="150" SelectionChanged="DirectionComboBox_SelectionChanged">
+                    <ComboBoxItem Content="EN -> DE" IsSelected="True" />
+                    <ComboBoxItem Content="DE -> EN" />
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Statistics Counter -->
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <TextBlock Text="Gewusst: " VerticalAlignment="Center" FontWeight="SemiBold" />
+                <TextBlock x:Name="StatsText" Text="0 / 10" VerticalAlignment="Center" FontWeight="Bold" Foreground="#4CAF50" FontSize="16" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Center: Flashcard -->
+        <Border Grid.Row="1" x:Name="FlashcardContainer" Background="Transparent" MouseLeftButtonUp="Flashcard_Click" Cursor="Hand" Width="500" Height="300" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border x:Name="FlashcardBorder" Background="White" CornerRadius="15" RenderTransformOrigin="0.5,0.5">
+                <Border.Effect>
+                    <DropShadowEffect Color="Gray" Direction="320" ShadowDepth="5" Opacity="0.3" BlurRadius="10"/>
+                </Border.Effect>
+                <Border.RenderTransform>
+                    <ScaleTransform x:Name="FlashcardScale" ScaleY="1" />
+                </Border.RenderTransform>
+                <Grid>
+                    <TextBlock x:Name="FlashcardWord" Text="Vokabel" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="48" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center" />
+                </Grid>
+            </Border>
+        </Border>
+
+        <!-- Bottom: Action Buttons -->
+        <Grid Grid.Row="2" Margin="0,30,0,0" Height="60">
+            <StackPanel x:Name="EvalButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
+                <Button x:Name="BtnKnown" Content="Gewusst" Background="#4CAF50" Foreground="White" FontSize="20" FontWeight="Bold" Width="180" Height="50" Margin="0,0,20,0" Click="BtnKnown_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button x:Name="BtnUnknown" Content="Nicht gewusst" Background="#F44336" Foreground="White" FontSize="20" FontWeight="Bold" Width="180" Height="50" Click="BtnUnknown_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+
+            <Button x:Name="BtnNext" Content="Weiter" Background="#2196F3" Foreground="White" FontSize="20" FontWeight="Bold" Width="200" Height="50" HorizontalAlignment="Center" Visibility="Collapsed" Click="BtnNext_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
     </Grid>
 </Window>
